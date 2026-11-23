@@ -8,7 +8,8 @@ export function registerHandlers(io: Server, socket: Socket): void {
     console.log("connected", socket.id);
 
     // TODO @彭于誠: 依下列事件呼叫 services
-    socket.on(ClientEvent.JoinPublic, (_req) => {});
+    socket.on(ClientEvent.CreateRoom, (_req) => {}); // CreateRoomReq → RoomJoinedRes 或 ErrorRes
+    socket.on(ClientEvent.JoinRoom, (_req) => {});   // JoinRoomReq → RoomJoinedRes 或 ErrorRes
     socket.on(ClientEvent.StartGame, () => {});
     socket.on(ClientEvent.SelectWord, (_req) => {});
     socket.on(ClientEvent.Draw, (_data) => {});

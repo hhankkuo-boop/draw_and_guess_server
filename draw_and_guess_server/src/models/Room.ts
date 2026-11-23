@@ -12,8 +12,7 @@ export class Room {
     hostId = "";
 
     constructor(
-        public readonly id: string,
-        public readonly isPublic: boolean = true,
+        public readonly id: string, // 4 位數房號 "0001" ~ "9999"
         public readonly maxPlayers: number = 8,
     ) {}
 

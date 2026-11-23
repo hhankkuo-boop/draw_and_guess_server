@@ -33,6 +33,15 @@ src/
 └─ data/words.json       題庫
 ```
 
+## 房間規則
+
+- 網站只有首頁。玩家輸入名字(最多 12 字)後,二選一:
+  - **Create Room**:系統從 `0001`~`9999` 挑一個未使用的房號建立房間,玩家成為房主。
+  - **Join Room**:輸入房號加入已存在的房間。
+- **沒有公開房間**、沒有自動配對。
+- 事件:`createRoom`(`{nickname}`)、`joinRoom`(`{nickname, roomId}`),成功回 `roomJoined`,失敗回 `error`(`ErrorCode`,見 `protocol/types.ts`)。
+- 無法加入的情況:房號格式錯、房間不存在、房間已滿、遊戲已開始、名字重複。
+
 ## 遊戲狀態(對應前端 GameState)
 
 `waitingRoom → selecting → drawing → revealing → awarding`
