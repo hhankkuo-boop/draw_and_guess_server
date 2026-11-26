@@ -56,7 +56,7 @@ export class RoomManager {
         return { ok: true, room };
     }
 
-    // - joinRoom(roomId, player): 驗證房號格式(ROOM_ID_PATTERN)、房間存在、未滿、遊戲未開始、名字不重複
+    // - joinRoom(roomId, player): 驗證房號格式(ROOM_ID_PATTERN)、房間存在、未滿、遊戲未開始、名稱重複則在後方加上後綴
     //   失敗時回傳對應 ErrorCode(見 protocol/types.ts)
     static joinRoom(roomId: string, player: Player): JoinRoomResult {
         if (!ROOM_ID_PATTERN.test(roomId) || roomId === "0000") {
@@ -81,17 +81,27 @@ export class RoomManager {
             return { ok: false, error: ErrorCode.gameStarted };
         }
 
-        const normalizedNickname = nickname.toLowerCase();
-        const nameTaken = [...room.players.values()].some(
-            (existingPlayer) =>
-                existingPlayer.nickname.trim().toLowerCase() === normalizedNickname,
+        const usedNicknames = new Set(
+            [...room.players.values()].map((existingPlayer) =>
+                existingPlayer.nickname.trim().toLowerCase(),
+            ),
         );
 
-        if (nameTaken) {
-            return { ok: false, error: ErrorCode.nameTaken };
+        let assignedNickname = nickname;
+        if (usedNicknames.has(assignedNickname.toLowerCase())) {
+            let suffixNumber = 2;
+
+            while (true) {
+                const suffix = `(${suffixNumber})`;
+                const baseNickname = nickname.slice(0, NAME_MAX_LENGTH - suffix.length);
+                assignedNickname = `${baseNickname}${suffix}`;
+
+                if (!usedNicknames.has(assignedNickname.toLowerCase())) break;
+                suffixNumber += 1;
+            }
         }
 
-        player.nickname = nickname;
+        player.nickname = assignedNickname;
 
         if (!room.addPlayer(player)) {
             return { ok: false, error: ErrorCode.gameStarted };
